@@ -5,7 +5,7 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 
 const app = express();
-
+const jwt = require('jsonwebtoken');
 // middleware
 app.use(cors());
 app.use(express.json());
@@ -57,11 +57,24 @@ async function run() {
         });
         // get the order 
         app.get('/order', async (req, res) => {
-            const query = {};
+            const authToken = req.headers.authorization;
+            console.log(authToken);
+            const email = req.query.email;
+            const query = { email: email };
             const cursor = orderCollection.find(query);
             const orders = await cursor.toArray();
             res.send(orders);
         })
+
+
+        // AUTH
+        app.post('/login', async (req, res) => {
+            const { user } = req.body;
+            const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRECT, { expiresIn: '1d' });
+            res.send({ accessToken }); 
+        })
+
+
     }
     finally {
 

@@ -20,7 +20,7 @@ const Checkout = () => {
         }
     });
     const onSubmit = data => {
-        axios.post('http://localhost:5000/order', data)
+        axios.post(`http://localhost:5000/order?email=${user.email}&amount=${service.amount}`, data)
             .then(res => {
                 (res.status === 200) ? toast.success('Order placed successfully') : toast.error('Order failed');
                 reset();
