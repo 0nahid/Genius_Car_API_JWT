@@ -10,6 +10,37 @@ const jwt = require('jsonwebtoken');
 app.use(cors());
 app.use(express.json());
 
+// verify jwt token
+// app.use(async (req, res, next) => {
+//     const token = req.headers['authorization'];
+//     if (token) {
+//         try {
+//             const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+//             req.user = decoded;
+//             next();
+//         } catch (err) {
+//             res.status(401).send({ error: 'Invalid token' });
+//         }
+//     } else {
+//         res.status(401).send({ error: 'No token' });
+//     }
+// });
+
+function verifyJWT(req, res, next) {
+    const authToken = req.headers.authorization;
+    if (!authToken) {
+        res.status(401).send({ error: 'No token' });
+    }
+    const token = authToken.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRECT, (err, decoded) => {
+        if (err) {
+            res.status(403).send({ error: 'Forbidden access token' });
+        }
+        console.log(decoded);
+    })
+    next();
+}
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@genius.r5hwg.mongodb.net/?retryWrites=true&w=majority`;
@@ -56,9 +87,7 @@ async function run() {
             res.send(result);
         });
         // get the order 
-        app.get('/order', async (req, res) => {
-            const authToken = req.headers.authorization;
-            console.log(authToken);
+        app.get('/order', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
             const cursor = orderCollection.find(query);
@@ -71,7 +100,7 @@ async function run() {
         app.post('/login', async (req, res) => {
             const { user } = req.body;
             const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRECT, { expiresIn: '1d' });
-            res.send({ accessToken }); 
+            res.send({ accessToken });
         })
 
 
