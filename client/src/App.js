@@ -9,6 +9,7 @@ import Login from './Pages/Login/Login/Login';
 import Register from './Pages/Login/Register/Register';
 import RequireAuth from './Pages/Login/RequireAuth/RequireAuth';
 import ManageServices from './Pages/ManageServices/ManageServices';
+import Order from './Pages/Order/Order';
 import ServiceDetail from './Pages/ServiceDetail/ServiceDetail';
 import Footer from './Pages/Shared/Footer/Footer';
 import Header from './Pages/Shared/Header/Header';
@@ -38,6 +39,11 @@ function App() {
         <Route path="/manage" element={
           <RequireAuth>
             <ManageServices></ManageServices>
+          </RequireAuth>
+        }></Route>
+        <Route path="/order" element={
+          <RequireAuth>
+            <Order></Order>
           </RequireAuth>
         }></Route>
         <Route path="*" element={<NotFound></NotFound>}></Route>
