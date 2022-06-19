@@ -26,21 +26,36 @@ app.use(express.json());
 //     }
 // });
 
-function verifyJWT(req, res, next) {
+// function verifyJWT(req, res, next) {
+//     const authToken = req.headers.authorization;
+//     if (!authToken) {
+//         res.status(401).send({ error: 'No token' });
+//     }
+//     const token = authToken.split(' ')[1];
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRECT, (err, decoded) => {
+//         if (err) {
+//             res.status(403).send({ error: 'Forbidden access token' });
+//         }
+//         console.log(decoded);
+//     })
+//     next();
+// }
+
+function jwtCheck(req, res, next) {
     const authToken = req.headers.authorization;
     if (!authToken) {
-        res.status(401).send({ error: 'No token' });
+        res.status(401).send({ error: 'Unauthorized access' });
     }
     const token = authToken.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRECT, (err, decoded) => {
         if (err) {
             res.status(403).send({ error: 'Forbidden access token' });
         }
-        console.log(decoded);
+        console.log(`decoded`, decoded);
+        req.decoded = decoded;
     })
     next();
 }
-
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@genius.r5hwg.mongodb.net/?retryWrites=true&w=majority`;
@@ -87,22 +102,29 @@ async function run() {
             res.send(result);
         });
         // get the order 
-        app.get('/order', verifyJWT, async (req, res) => {
+        app.get('/order', jwtCheck, async (req, res) => {
+            const decodedEmail = req.decoded.email;
             const email = req.query.email;
-            const query = { email: email };
-            const cursor = orderCollection.find(query);
-            const orders = await cursor.toArray();
-            res.send(orders);
+            if (email === decodedEmail) {
+                const query = { email: email };
+                const cursor = orderCollection.find(query);
+                const orders = await cursor.toArray();
+                res.send(orders);
+            }
+            else {
+                res.status(401).send({ error: 'Unauthorized access' });
+            }
         })
 
 
         // AUTH
         app.post('/login', async (req, res) => {
-            const { user } = req.body;
-            const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRECT, { expiresIn: '1d' });
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRECT, {
+                expiresIn: '1d'
+            });
             res.send({ accessToken });
         })
-
 
     }
     finally {

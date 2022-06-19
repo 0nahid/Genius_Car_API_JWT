@@ -31,9 +31,9 @@ const Login = () => {
         return <Loading></Loading>
     }
 
-    if (user) {
-        navigate(from, { replace: true });
-    }
+    // if (user) {
+    //     navigate(from, { replace: true });
+    // }
 
     if (error) {
         errorElement = <p className='text-danger'>Error: {error?.message}</p>
@@ -43,12 +43,12 @@ const Login = () => {
         event.preventDefault();
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
-
         await signInWithEmailAndPassword(email, password);
-        const {data} = await axios.post('http://localhost:5000/login',{email});
-        localStorage.setItem('accessToken',data.accessToken);
-        navigate (from, { replace: true }); 
+        const {data } = await axios.post('http://localhost:5000/login', {email});
+        // set to local storage
+        localStorage.setItem('accessToken', data.accessToken);
         console.log(data);
+        navigate (from, { replace: true }); 
     }
 
     const navigateRegister = event => {
