@@ -1,12 +1,11 @@
-import React from 'react';
 import { useForm } from "react-hook-form";
 
 const AddService = () => {
     const { register, handleSubmit } = useForm();
-    
+
     const onSubmit = data => {
         console.log(data);
-        const url = `http://localhost:5000/service`;
+        const url = `http://44.227.255.198:5000/service`;
         fetch(url, {
             method: 'POST',
             headers: {
@@ -14,10 +13,10 @@ const AddService = () => {
             },
             body: JSON.stringify(data)
         })
-        .then(res=> res.json())
-        .then(result =>{
-            console.log(result);
-        } )
+            .then(res => res.json())
+            .then(result => {
+                console.log(result);
+            })
     };
 
 

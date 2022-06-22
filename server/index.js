@@ -51,7 +51,7 @@ function jwtCheck(req, res, next) {
         if (err) {
             res.status(403).send({ error: 'Forbidden access token' });
         }
-        console.log(`decoded`, decoded);
+        // console.log(`decoded`, decoded);
         req.decoded = decoded;
         next();
     })
@@ -104,7 +104,7 @@ async function run() {
         });
         // get the order 
         app.get('/order', jwtCheck, async (req, res) => {
-            const decodedEmail = req.decoded.email;
+            const decodedEmail = req?.decoded?.email;
             const email = req.query.email;
             if (email === decodedEmail) {
                 const query = { email: email };

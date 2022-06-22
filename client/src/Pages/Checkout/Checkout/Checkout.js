@@ -1,33 +1,31 @@
 
 import axios from 'axios';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import auth from '../../../firebase.init';
-import useServiceDetail from '../../../hooks/useServiceDetails';
 const Checkout = () => {
     const { id } = useParams();
     // const [service] = useServiceDetail(id);
     const [service, setService] = useState({})
-    useEffect(()=>{
-        const url = `http://localhost:5000/service/${id}`;
+    useEffect(() => {
+        const url = `http://44.227.255.198:5000/service/${id}`;
         // console.log(url);
         fetch(url)
             .then(res => res.json())
             .then(data => setService(data));
-    },[id])
-    console.log(service.name + ' ' + service.price);
+    }, [id])
+    // console.log(service.name + ' ' + service.price);
     const [user] = useAuthState(auth)
     const { register, handleSubmit, reset } = useForm();
     const onSubmit = data => {
-        // axios.post('http://localhost:5000/order', data)
-        //     .then(res => {
-        //         (res.status === 200) ? toast.success('Order placed successfully') : toast.error('Order failed');
-        //         reset();
-        //     })
+        axios.post('http://44.227.255.198:5000/order', data)
+            .then(res => {
+                (res.status === 200) ? toast.success('Order placed successfully') : toast.error('Order failed');
+                reset();
+            })
         console.log(data);
     }
 
